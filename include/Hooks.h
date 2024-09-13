@@ -8,7 +8,7 @@ namespace Subtitles
 		static void Install()
 		{
 			REL::Relocation<std::uintptr_t> pcVTable{ RE::VTABLE_PlayerCharacter[0] };
-			UpdatePC = pcVTable.write_vfunc(0xAD, UpdatePCMod);
+			UpdatePC = pcVTable.write_vfunc(REL::Module::IsVR() ? 0xAF : 0xAD, UpdatePCMod);
 			logger::info("PlayerCharacter::Update hooked");
 		}
 
@@ -35,12 +35,12 @@ namespace Subtitles
 	public:
 		static void Install()
 		{
-			auto address = REL::VariantID(50718, 51612, 0).address();
+			auto address = REL::VariantID(50718, 51612, 0x8AA8B0).address();
 
-			auto offset = REL::VariantOffset(0x756, 0x77E, 0).offset();
+			auto offset = REL::VariantOffset(0x756, 0x77E, 0xAA9).offset();
 			SKSE::GetTrampoline().write_call<5>(address + offset, InvokeModHide);
 
-			offset = REL::VariantOffset(0x703, 0x72B, 0).offset();
+			offset = REL::VariantOffset(0x703, 0x72B, 0xA56).offset();
 			SKSE::GetTrampoline().write_call<5>(address + offset, InvokeModShow);
 			logger::info("Invoke calls in HUDMenu::ProcessMessage hooked");
 		}
@@ -68,11 +68,7 @@ namespace Subtitles
 		void Install()
 		{
 			Subtitles::UpdatePCHook::Install();
-			if (!REL::Module::IsVR()) {
-				Subtitles::InvokeHook::Install();
-			} else {
-				logger::info("Skipping Invoke hook because I don't have the VR offset yet!");
-			}
+			Subtitles::InvokeHook::Install();
 		}
 	}
 }
