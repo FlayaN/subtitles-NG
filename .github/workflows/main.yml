@@ -1,0 +1,22 @@
+name: main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  main:
+    if: github.repository == 'FlayaN/subtitles-NG'
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: FlayaN/skyrim-mods/.github/actions/build-artifact-nexus@main
+        with:
+          configurePreset: ALL
+          buildPreset: Release
+          PAT: ${{ secrets.PAT }}
+          modName: subtitles-ng
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
